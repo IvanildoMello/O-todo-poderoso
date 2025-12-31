@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { generateImage } from '../services/geminiService';
+import { saveFileToDrive, base64ToBlob } from '../services/storageService';
 
 const ImageGenerator: React.FC = () => {
   const [prompt, setPrompt] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
@@ -24,6 +26,30 @@ const ImageGenerator: React.FC = () => {
       setError("Erro ao conectar com o módulo visual.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveToDrive = async () => {
+    if (!imageUrl) return;
+    setSaving(true);
+    try {
+      const blob = base64ToBlob(imageUrl, 'image/png');
+      const filename = `VISION_${Date.now()}.png`;
+      
+      await saveFileToDrive({
+        name: filename,
+        type: 'IMAGE',
+        mimeType: 'image/png',
+        data: blob,
+        size: blob.size
+      });
+      
+      alert(`Arquivo ${filename} salvo no OmniDrive.`);
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao salvar no sistema interno.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -55,13 +81,23 @@ const ImageGenerator: React.FC = () => {
         {imageUrl ? (
           <div className="relative w-full h-full flex items-center justify-center bg-black">
              <img src={imageUrl} alt="Generated" className="max-h-full max-w-full object-contain shadow-2xl" />
-             <a 
-               href={imageUrl} 
-               download={`omni-gen-${Date.now()}.png`}
-               className="absolute bottom-4 right-4 bg-omni-accent text-omni-dark px-4 py-2 rounded shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity font-bold text-sm"
-             >
-               <i className="fas fa-download mr-2"></i> Salvar
-             </a>
+             <div className="absolute bottom-4 right-4 flex gap-2">
+               <button 
+                 onClick={handleSaveToDrive}
+                 disabled={saving}
+                 className="bg-black/80 hover:bg-black border border-omni-accent text-omni-accent px-4 py-2 rounded shadow-lg transition-all font-bold text-sm flex items-center gap-2 backdrop-blur"
+               >
+                 {saving ? <i className="fas fa-circle-notch fa-spin"></i> : <i className="fas fa-hdd"></i>}
+                 Salvar no Sistema
+               </button>
+               <a 
+                 href={imageUrl} 
+                 download={`omni-gen-${Date.now()}.png`}
+                 className="bg-omni-accent hover:bg-cyan-400 text-omni-dark px-4 py-2 rounded shadow-lg transition-all font-bold text-sm flex items-center gap-2"
+               >
+                 <i className="fas fa-download"></i> Baixar
+               </a>
+             </div>
           </div>
         ) : (
           <div className="text-gray-600 flex flex-col items-center p-4 text-center">

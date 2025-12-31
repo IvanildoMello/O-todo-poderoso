@@ -3,7 +3,8 @@ export enum AppMode {
   IMAGE = 'IMAGE',
   MATH = 'MATH',
   REPORT = 'REPORT',
-  CYBER = 'CYBER'
+  CYBER = 'CYBER',
+  FILES = 'FILES'
 }
 
 export enum SubscriptionTier {
@@ -86,4 +87,14 @@ export interface Countermeasure {
   target: string;
   status: 'PENDING' | 'EXECUTING' | 'COMPLETED' | 'FAILED';
   riskLevel: 'HIGH' | 'MEDIUM' | 'LOW';
+}
+
+export interface StoredFile {
+  id: string;
+  name: string;
+  type: 'IMAGE' | 'REPORT' | 'LOG';
+  mimeType: string;
+  data: Blob; // Raw binary data
+  size: number;
+  createdAt: number;
 }

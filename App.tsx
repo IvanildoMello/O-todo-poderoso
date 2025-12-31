@@ -5,6 +5,7 @@ import ImageGenerator from './components/ImageGenerator';
 import MathSolver from './components/MathSolver';
 import ReportDashboard from './components/ReportDashboard';
 import CyberDefenseHub from './components/CyberDefenseHub';
+import FileManager from './components/FileManager';
 import LandingPage from './components/LandingPage';
 import { saveSystemPrompt, getSystemPrompt } from './services/storageService';
 import { getCurrentUser, login, logout } from './services/authService';
@@ -85,7 +86,8 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen w-screen bg-slate-950 overflow-hidden font-sans text-gray-100 selection:bg-omni-accent selection:text-black">
+    // h-[100dvh] ensures it fits perfectly on mobile screens considering address bars etc.
+    <div className="flex h-[100dvh] w-screen bg-slate-950 overflow-hidden font-sans text-gray-100 selection:bg-omni-accent selection:text-black">
       
       {/* Sidebar (Desktop/Tablet) - Hidden on Mobile */}
       <div className="hidden md:flex w-20 lg:w-64 bg-omni-dark border-r border-gray-800 flex-col p-4 shrink-0 z-20 transition-all duration-300">
@@ -117,6 +119,12 @@ const App: React.FC = () => {
             label="Visual Studio" 
             active={mode === AppMode.IMAGE} 
             onClick={() => setMode(AppMode.IMAGE)} 
+          />
+          <SidebarItem 
+            icon="fa-folder-open" 
+            label="Omni Drive" 
+            active={mode === AppMode.FILES} 
+            onClick={() => setMode(AppMode.FILES)} 
           />
           <SidebarItem 
             icon="fa-square-root-alt" 
@@ -152,7 +160,7 @@ const App: React.FC = () => {
       <div className="flex-1 flex flex-col relative overflow-hidden">
         
         {/* Top Bar */}
-        <header className="h-14 md:h-16 border-b border-gray-800 bg-omni-dark/80 backdrop-blur flex items-center justify-between px-4 md:px-6 shrink-0 z-10">
+        <header className="h-14 md:h-16 border-b border-gray-800 bg-omni-dark/80 backdrop-blur flex items-center justify-between px-4 md:px-6 shrink-0 z-10 pt-safe-top">
           <div className="flex items-center gap-3">
             <div className="relative">
                <span className="absolute w-2 h-2 rounded-full bg-emerald-500 animate-ping opacity-75"></span>
@@ -188,12 +196,13 @@ const App: React.FC = () => {
           {mode === AppMode.CHAT && <div className="h-full p-2 md:p-4"><ChatInterface systemPrompt={systemPrompt} /></div>}
           {mode === AppMode.CYBER && <CyberDefenseHub />}
           {mode === AppMode.IMAGE && <ImageGenerator />}
+          {mode === AppMode.FILES && <FileManager />}
           {mode === AppMode.MATH && <MathSolver />}
           {mode === AppMode.REPORT && <ReportDashboard />}
 
           {/* Settings Overlay */}
           {showSettings && (
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in pb-safe-bottom">
               <div className="bg-omni-panel border border-omni-accent/30 p-6 md:p-8 rounded-2xl w-full max-w-2xl shadow-[0_0_50px_rgba(6,182,212,0.15)] relative overflow-hidden max-h-[90vh] overflow-y-auto">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-omni-accent to-transparent"></div>
                 
@@ -234,7 +243,7 @@ const App: React.FC = () => {
         </main>
 
         {/* Mobile Bottom Navigation */}
-        <div className="md:hidden fixed bottom-0 left-0 w-full h-[4.5rem] bg-omni-dark/95 backdrop-blur-xl border-t border-gray-800 flex items-center justify-between px-2 z-40 pb-safe">
+        <div className="md:hidden fixed bottom-0 left-0 w-full h-[4.5rem] bg-omni-dark/95 backdrop-blur-xl border-t border-gray-800 flex items-center justify-between px-2 z-40 pb-safe-bottom">
            <MobileNavItem 
              icon="fa-comments" 
              label="Chat" 
@@ -247,18 +256,17 @@ const App: React.FC = () => {
              active={mode === AppMode.CYBER} 
              onClick={() => setMode(AppMode.CYBER)} 
            />
-           <div className="w-px h-8 bg-gray-800 mx-1"></div>
+           <MobileNavItem 
+             icon="fa-folder-open" 
+             label="Files" 
+             active={mode === AppMode.FILES} 
+             onClick={() => setMode(AppMode.FILES)} 
+           />
            <MobileNavItem 
              icon="fa-paint-brush" 
              label="Visual" 
              active={mode === AppMode.IMAGE} 
              onClick={() => setMode(AppMode.IMAGE)} 
-           />
-           <MobileNavItem 
-             icon="fa-square-root-alt" 
-             label="Math" 
-             active={mode === AppMode.MATH} 
-             onClick={() => setMode(AppMode.MATH)} 
            />
            <MobileNavItem 
              icon="fa-chart-pie" 

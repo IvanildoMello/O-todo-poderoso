@@ -1,5 +1,9 @@
 {
   "name": "O Poderoso",
   "description": "Uma interface de inteligência artificial avançada, pessoal e sem restrições de escopo funcional. Capaz de chat complexo, geração de imagens, relatórios estruturados e matemática avançada.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
 }
